@@ -158,6 +158,24 @@ describe('markers', () => {
     assert.equal(removeBlock(text), '# A\n');
     assert.equal(upsertBlock(text, 'new'), '# A\n\n<!-- nestjs-boost:start -->\nnew\n<!-- nestjs-boost:end -->\n');
   });
+
+  it('gives back the exact original bytes, keeping CRLF line endings', () => {
+    for (const original of ['# A\n', '# A\r\n\r\nrules\r\n', '# A\n\n\n', '# A\n\nend with blank\n\n']) {
+      const withBlock = upsertBlock(original, 'line 1\nline 2');
+      assert.ok(withBlock.startsWith(original), 'user text untouched');
+      if (original.includes('\r\n')) assert.ok(!/[^\r]\n/.test(withBlock), 'no mixed line endings');
+      assert.equal(removeBlock(upsertBlock(withBlock, 'refreshed')), original);
+    }
+  });
+
+  it('uninstall restores an existing CRLF file byte for byte', () => {
+    const original = '# Team rules\r\n\r\nUse pnpm.\r\n';
+    const root = project({}, { 'AGENTS.md': original });
+    sync(root, { agents: 'codex' });
+    assert.match(read(root, 'AGENTS.md'), /\r\n<!-- nestjs-boost:start -->\r\n/);
+    uninstall(root);
+    assert.equal(read(root, 'AGENTS.md'), original);
+  });
 });
 
 describe('cli', () => {
@@ -190,8 +208,8 @@ describe('security', () => {
     const r = sync(root);
     const w = r.warnings.join('\n');
     assert.ok(!/[\x1b\x07‮]/.test(w), 'raw control characters reach the terminal');
-    assert.match(w, /\\u001b\]52;c;cGF5bG9hZA==\\u0007evil\\u202e/);
-    assert.throws(() => sync(root, { agents: '\x1b[2Jfake' }), (e) => !e.message.includes('\x1b') && e.message.includes('\\u001b[2Jfake'));
+    assert.match(w, /<U\+001B>\]52;c;cGF5bG9hZA==<U\+0007>evil<U\+202E>/);
+    assert.throws(() => sync(root, { agents: '\x1b[2Jfake' }), (e) => !e.message.includes('\x1b') && e.message.includes('<U+001B>[2Jfake'));
   });
 
   it('ignores "__proto__" in package.json dependencies', () => {

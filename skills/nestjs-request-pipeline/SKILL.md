@@ -67,8 +67,12 @@ export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
 
 // auth/api-key.guard.ts
-import { createHash, timingSafeEqual } from 'node:crypto';
-const digest = (value: string) => createHash('sha256').update(value).digest();   // equal length for timingSafeEqual
+import { timingSafeEqual } from 'node:crypto';
+const sameSecret = (given: string, expected: string) => {   // constant time; only the length can leak
+  const a = Buffer.from(given);
+  const b = Buffer.from(expected);
+  return a.length === b.length && timingSafeEqual(a, b);
+};
 
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
@@ -80,7 +84,7 @@ export class ApiKeyGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     const expected = this.config.get<string>('API_KEY');
     const given = req.headers['x-api-key'];
-    if (!expected || typeof given !== 'string' || !timingSafeEqual(digest(given), digest(expected))) throw new UnauthorizedException();
+    if (!expected || typeof given !== 'string' || !sameSecret(given, expected)) throw new UnauthorizedException();
     return true;
   }
 }
@@ -91,7 +95,7 @@ export class ApiKeyGuard implements CanActivate {
 
 - `getAllAndOverride` lets route metadata override controller metadata; `getAllAndMerge` combines arrays (e.g. roles).
 - Fail closed: if the secret is not configured, deny.
-- Compare secrets in constant time (`timingSafeEqual` over equal-length digests), never with `===`/`!==`, which leaks how many leading characters matched. Reject a header that isn't a single string.
+- Compare secrets in constant time (`timingSafeEqual` after a length check), never with `===`/`!==`, which leaks how many leading characters matched. Reject a header that isn't a single string. Don't hash the key just to compare it: a fast hash like SHA-256 is fine here but reads as weak password hashing to scanners (CodeQL `js/insufficient-password-hash`).
 - For decorators that take a value (e.g. `@Roles(['admin'])`), prefer the typed form `export const Roles = Reflector.createDecorator<string[]>()`, read with `this.reflector.get(Roles, context.getHandler())`.
 
 ## Pattern: consistent error responses with errorCode

@@ -142,7 +142,7 @@ const invokedDirectly = () => {
 if (invokedDirectly()) {
   main().catch((err) => {
     if (err instanceof PromptCancelled) { console.log('\nCancelled; nothing was changed.'); process.exitCode = 130; return; }
-    console.error(`nestjs-boost: ${err instanceof BoostError ? err.message : clean(err.stack).replaceAll('\\u000a', '\n')}`);
+    console.error(`nestjs-boost: ${err instanceof BoostError ? err.message : String(err.stack).split('\n').map(clean).join('\n')}`);
     process.exitCode = 1;
   });
 }
