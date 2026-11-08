@@ -1,6 +1,6 @@
 {
   "name": "nestjs-boost",
-  "version": "1.2.1",
+  "version": "1.2.0",
   "description": "Agent Skills and project guidelines for AI-assisted NestJS 12 development. Interactive installer for Claude Code, GitHub Copilot, Cursor, Codex, Gemini CLI, Windsurf, Cline, Roo Code, Kiro, Junie and OpenCode.",
   "keywords": [
     "nestjs",
