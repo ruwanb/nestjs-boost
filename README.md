@@ -166,4 +166,5 @@ Report vulnerabilities privately through GitHub security advisories, not public 
 MIT. The skills are distilled from the [NestJS documentation](https://github.com/nestjs/docs.nestjs.com) (MIT); see `NOTICE.md`. This is a community project, not affiliated with the NestJS team.
 
 ## Credits
-The NestJS team, with appreciation + love for their clean and clear documentation (https://github.com/nestjs/docs.nestjs.com).
+
+Thanks to the NestJS team, with appreciation and love, for their clean and clear [documentation](https://github.com/nestjs/docs.nestjs.com).
