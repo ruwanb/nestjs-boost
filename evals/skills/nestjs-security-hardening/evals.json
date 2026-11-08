@@ -1,0 +1,38 @@
+{
+  "skill_name": "nestjs-security-hardening",
+  "evals": [
+    {
+      "id": "sec-1",
+      "prompt": "Add rate limiting: at most 10 requests per minute per client across the whole API, and a stricter limit of 3 requests per minute on POST /auth/login (just return { ok: true } from it for now).",
+      "expected_output": "@nestjs/throttler with a global ThrottlerGuard (APP_GUARD) and @Throttle override on the login route.",
+      "assertions": [
+        "The 4th POST /auth/login within a minute returns 429",
+        "The 11th GET / within a minute returns 429 while the first 10 succeed",
+        "Uses @nestjs/throttler"
+      ]
+    },
+    {
+      "id": "sec-2",
+      "prompt": "Add standard security headers to every response, and enable CORS so that only https://app.example.com can call the API from a browser, with credentials allowed.",
+      "expected_output": "Built-in app.useSecurityHeaders() (NestJS 12.1+, Helmet 8 defaults, no extra package) or helmet(); app.enableCors({ origin: 'https://app.example.com', credentials: true }).",
+      "assertions": [
+        "Responses carry standard security headers (x-content-type-options: nosniff)",
+        "A preflight from https://app.example.com is allowed with credentials",
+        "A preflight from another origin does not get that origin allowed",
+        "[docs] Uses the built-in app.useSecurityHeaders() (NestJS 12.1+) instead of adding helmet"
+      ]
+    },
+    {
+      "id": "sec-3",
+      "overlay": "users-module",
+      "prompt": "POST /users stores the raw password in passwordHash. Hash passwords properly before storing, and add POST /auth/login { email, password } that returns { ok: true } for correct credentials and 401 otherwise.",
+      "expected_output": "Passwords hashed with a slow, salted algorithm (the docs recommend PasswordHasher from @nestjs/authentication, scrypt; argon2/bcrypt acceptable); login verifies with the hasher.",
+      "assertions": [
+        "Login with the correct password returns { ok: true }",
+        "Login with a wrong password returns 401",
+        "The stored password is not the plaintext",
+        "Uses a password-hashing algorithm (scrypt/argon2/bcrypt), not a plain digest such as sha256/md5"
+      ]
+    }
+  ]
+}

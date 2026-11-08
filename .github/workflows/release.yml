@@ -1,0 +1,39 @@
+# Publishes on version tags using npm trusted publishing (OIDC): no NPM_TOKEN secret needed.
+# One-time setup:
+#   - npmjs.com: package settings → Trusted publishing → add this repo, this workflow file and the
+#     `npm-publish` environment.
+#   - GitHub: Settings → Environments → `npm-publish` → add required reviewers, and restrict
+#     deployments to protected `v*` tags (Settings → Rules → tag ruleset) so a tag push alone
+#     can't publish.
+# Actions are pinned to full commit SHAs (tag in the comment); bump them deliberately.
+name: Release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm-publish
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Check the tag matches package.json and manifest.json
+        run: |
+          pkg="v$(node -p "require('./package.json').version")"
+          man="v$(node -p "require('./manifest.json').version")"
+          if [ "$GITHUB_REF_NAME" != "$pkg" ] || [ "$GITHUB_REF_NAME" != "$man" ]; then
+            echo "tag $GITHUB_REF_NAME does not match package.json ($pkg) / manifest.json ($man)"; exit 1
+          fi
+      - run: npm install -g npm@11.21.2 # trusted publishing needs npm >= 11.5.1; pinned, not @latest
+      - run: npm test
+      - run: npm publish --provenance --access public

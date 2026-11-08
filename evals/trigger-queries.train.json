@@ -1,0 +1,238 @@
+[
+  {
+    "query": "lazy load the heavy reporting module only when someone hits the export endpoint",
+    "expected_skill": "nestjs-architecture"
+  },
+  {
+    "query": "Nest can't resolve dependencies of the ReportsService (?). argument ConfigService at index [0] \u2014 what's wrong",
+    "expected_skill": "nestjs-architecture"
+  },
+  {
+    "query": "build a reusable module that takes options like forRoot({ apiKey }) and forRootAsync",
+    "expected_skill": "nestjs-architecture"
+  },
+  {
+    "query": "run some code once all modules are initialized, before the app starts listening",
+    "expected_skill": "nestjs-architecture"
+  },
+  {
+    "query": "my provider typed as an interface isn't being injected, getting Object at index 0",
+    "expected_skill": "nestjs-architecture"
+  },
+  {
+    "query": "inject a third-party SDK client instance into my services, it's created with new StripeClient(key)",
+    "expected_skill": "nestjs-architecture"
+  },
+  {
+    "query": "return a consistent error JSON for every exception including 404s",
+    "expected_skill": "nestjs-request-pipeline"
+  },
+  {
+    "query": "add a global /api prefix but keep /health at the root",
+    "expected_skill": "nestjs-request-pipeline"
+  },
+  {
+    "query": "GET /orders/latest is being matched by /orders/:id",
+    "expected_skill": "nestjs-request-pipeline"
+  },
+  {
+    "query": "make a @CurrentUser() param decorator that pulls req.user",
+    "expected_skill": "nestjs-request-pipeline"
+  },
+  {
+    "query": "convert the id route param to a number and 400 if it's not one",
+    "expected_skill": "nestjs-request-pipeline"
+  },
+  {
+    "query": "only admins should be able to hit these routes, check the role on the user object",
+    "expected_skill": "nestjs-request-pipeline"
+  },
+  {
+    "query": "validate the request body for creating a customer \u2014 email must be valid, age optional int >= 18",
+    "expected_skill": "nestjs-validation-serialization"
+  },
+  {
+    "query": "validation errors should list every field that failed, grouped by field",
+    "expected_skill": "nestjs-validation-serialization"
+  },
+  {
+    "query": "use zod schemas to validate the body instead of class-validator",
+    "expected_skill": "nestjs-validation-serialization"
+  },
+  {
+    "query": "make UpdateUserDto the same as CreateUserDto but all fields optional",
+    "expected_skill": "nestjs-validation-serialization"
+  },
+  {
+    "query": "never send the password field back in responses",
+    "expected_skill": "nestjs-validation-serialization"
+  },
+  {
+    "query": "rename created_at to createdAt in the output and add a computed fullName",
+    "expected_skill": "nestjs-validation-serialization"
+  },
+  {
+    "query": "make env vars available everywhere without importing the config module each time",
+    "expected_skill": "nestjs-configuration"
+  },
+  {
+    "query": "load extra settings from a config.yaml file",
+    "expected_skill": "nestjs-configuration"
+  },
+  {
+    "query": "typed config object for the database settings instead of configService.get('DB_HOST')",
+    "expected_skill": "nestjs-configuration"
+  },
+  {
+    "query": "configure TypeOrmModule asynchronously using values from the config service",
+    "expected_skill": "nestjs-configuration"
+  },
+  {
+    "query": "read settings from .env and fail at boot if a required var is missing",
+    "expected_skill": "nestjs-configuration"
+  },
+  {
+    "query": "use the port from config in main.ts",
+    "expected_skill": "nestjs-configuration"
+  },
+  {
+    "query": "mock the ConfigService in a unit test",
+    "expected_skill": "nestjs-testing"
+  },
+  {
+    "query": "jest.fn is not defined in my spec file",
+    "expected_skill": "nestjs-testing"
+  },
+  {
+    "query": "write unit tests for PaymentsService and mock the repository",
+    "expected_skill": "nestjs-testing"
+  },
+  {
+    "query": "e2e test for POST /orders with supertest",
+    "expected_skill": "nestjs-testing"
+  },
+  {
+    "query": "e2e tests use express but the app runs on fastify, tests behave differently",
+    "expected_skill": "nestjs-testing"
+  },
+  {
+    "query": "my e2e tests get 401 because of the global auth guard, how do I bypass it in tests only",
+    "expected_skill": "nestjs-testing"
+  },
+  {
+    "query": "run nest build for all projects in parallel in CI",
+    "expected_skill": "nestjs-cli-tooling"
+  },
+  {
+    "query": "turn the repo into a monorepo with an api app and a worker app sharing a lib",
+    "expected_skill": "nestjs-cli-tooling"
+  },
+  {
+    "query": "start:dev restarts take forever, set up hot reload",
+    "expected_skill": "nestjs-cli-tooling"
+  },
+  {
+    "query": "what does nest g library do and how do I import from it",
+    "expected_skill": "nestjs-cli-tooling"
+  },
+  {
+    "query": "scaffold a new controller and service for shipments",
+    "expected_skill": "nestjs-cli-tooling"
+  },
+  {
+    "query": "nest build --webpack is deprecated, what do I use instead",
+    "expected_skill": "nestjs-cli-tooling"
+  },
+  {
+    "query": "add timestamps to log lines",
+    "expected_skill": "nestjs-logging"
+  },
+  {
+    "query": "inject a logger into a service with the class name as context",
+    "expected_skill": "nestjs-logging"
+  },
+  {
+    "query": "add a correlation id to every log line for a request",
+    "expected_skill": "nestjs-logging"
+  },
+  {
+    "query": "replace the nest logger with pino",
+    "expected_skill": "nestjs-logging"
+  },
+  {
+    "query": "store the current user and tenant per request without passing them around",
+    "expected_skill": "nestjs-logging"
+  },
+  {
+    "query": "logs before app.useLogger are printed with the default logger",
+    "expected_skill": "nestjs-logging"
+  },
+  {
+    "query": "allow CORS only from our frontend domain with cookies",
+    "expected_skill": "nestjs-security-hardening"
+  },
+  {
+    "query": "add security headers",
+    "expected_skill": "nestjs-security-hardening"
+  },
+  {
+    "query": "add rate limiting, 100 req per minute per ip",
+    "expected_skill": "nestjs-security-hardening"
+  },
+  {
+    "query": "encrypt a field before storing it and decrypt it later",
+    "expected_skill": "nestjs-security-hardening"
+  },
+  {
+    "query": "helmet breaks the swagger UI",
+    "expected_skill": "nestjs-security-hardening"
+  },
+  {
+    "query": "skip throttling for the health check",
+    "expected_skill": "nestjs-security-hardening"
+  },
+  {
+    "query": "add swagger docs for all endpoints",
+    "expected_skill": "nestjs-openapi"
+  },
+  {
+    "query": "add google login and 2FA",
+    "expected_skill": "nestjs-authentication"
+  },
+  {
+    "query": "implement JWT auth with passport-jwt strategy",
+    "expected_skill": "nestjs-passport-auth"
+  },
+  {
+    "query": "create a typeorm entity for orders with a relation to customers",
+    "expected_skill": "nestjs-database-typeorm"
+  },
+  {
+    "query": "my guard doesn't work on graphql resolvers",
+    "expected_skill": "nestjs-graphql"
+  },
+  {
+    "query": "validation pipe isn't applied to my kafka message handlers",
+    "expected_skill": "nestjs-microservices"
+  },
+  {
+    "query": "process image resizing in a background job with retries",
+    "expected_skill": "nestjs-queues"
+  },
+  {
+    "query": "call the shipping carrier's REST API with retries and a timeout",
+    "expected_skill": "nestjs-http-client"
+  },
+  {
+    "query": "set up tracing so I can see slow requests in production",
+    "expected_skill": "nestjs-observability"
+  },
+  {
+    "query": "set up a GitHub Actions workflow that runs npm test",
+    "expected_skill": "none"
+  },
+  {
+    "query": "fix this React useEffect infinite loop",
+    "expected_skill": "none"
+  }
+]

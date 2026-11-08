@@ -1,0 +1,67 @@
+{
+  "name": "nestjs-boost",
+  "version": "1.2.0",
+  "description": "Agent Skills and project guidelines for AI-assisted NestJS 12 development. Interactive installer for Claude Code, GitHub Copilot, Cursor, Codex, Gemini CLI, Windsurf, Cline, Roo Code, Kiro, Junie and OpenCode.",
+  "keywords": [
+    "nestjs",
+    "agent-skills",
+    "skills",
+    "ai",
+    "claude-code",
+    "codex",
+    "cursor",
+    "copilot",
+    "agents-md",
+    "mcp",
+    "gemini-cli",
+    "windsurf",
+    "cline",
+    "roo-code",
+    "kiro",
+    "junie",
+    "opencode",
+    "skill-md"
+  ],
+  "license": "MIT",
+  "author": "Ruwan Bandara",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ruwanb/nestjs-boost.git"
+  },
+  "homepage": "https://github.com/ruwanb/nestjs-boost#readme",
+  "bugs": {
+    "url": "https://github.com/ruwanb/nestjs-boost/issues"
+  },
+  "type": "module",
+  "bin": {
+    "nestjs-boost": "bin/nestjs-boost.mjs"
+  },
+  "exports": {
+    ".": "./lib/installer.mjs",
+    "./manifest.json": "./manifest.json",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "scripts/postinstall.mjs",
+    "guidelines/",
+    "skills/",
+    "manifest.json",
+    "CHANGELOG.md",
+    "NOTICE.md"
+  ],
+  "scripts": {
+    "postinstall": "node scripts/postinstall.mjs",
+    "validate": "node scripts/validate.mjs .",
+    "test": "node scripts/validate.mjs . && node --test test/installer.test.mjs test/agents.test.mjs",
+    "prepublishOnly": "npm test",
+    "version": "node -e \"const fs=require('fs');const v=JSON.parse(fs.readFileSync('package.json','utf8')).version;const m=JSON.parse(fs.readFileSync('manifest.json','utf8'));m.version=v;fs.writeFileSync('manifest.json',JSON.stringify(m,null,2)+'\\n')\" && git add manifest.json"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "skill_name": "nestjs-testing",
+  "evals": [
+    {
+      "id": "test-1",
+      "overlay": "users-module",
+      "prompt": "Write unit tests for UsersService (src/users/users.service.ts). Mock UsersRepository and cover findOne success, findOne when the user doesn't exist (NotFoundException), and create.",
+      "expected_output": "A users.service.spec.ts using Test.createTestingModule with a mocked repository, written for the project's test runner (Vitest).",
+      "assertions": [
+        "npm test passes",
+        "A UsersService spec exists and uses Test.createTestingModule",
+        "UsersRepository is mocked (useValue / overrideProvider), not the real class",
+        "Uses the project's runner API (vi.*), no jest.* globals",
+        "Tests fail when NotFoundException handling is broken (mutation check)"
+      ]
+    },
+    {
+      "id": "test-2",
+      "overlay": "users-module",
+      "prompt": "Add end-to-end tests for the users endpoints: GET /users/1 returns the seeded user, GET /users/999 returns 404, and GET /users/abc returns 400.",
+      "expected_output": "An e2e spec that boots AppModule with supertest and covers the three cases.",
+      "assertions": [
+        "npm run test:e2e passes",
+        "An e2e spec covers /users",
+        "E2E tests fail when the 404 handling is broken (mutation check)"
+      ]
+    },
+    {
+      "id": "test-3",
+      "overlay": "global-guard",
+      "env": { "API_KEY": "prod-key" },
+      "prompt": "Our API key guard (src/auth/api-key.guard.ts) is registered globally, and now the e2e tests fail with 401. Make the e2e tests run without a real API key by overriding the guard in the test setup only. Production must still enforce the key.",
+      "expected_output": "The guard registered with useExisting so the testing module can overrideProvider(ApiKeyGuard), per the docs' 'Overriding globally registered enhancers'.",
+      "assertions": [
+        "npm run test:e2e passes",
+        "The built app still returns 401 without the key",
+        "The test overrides the guard via the testing module rather than setting API_KEY in tests",
+        "The global guard registration remains in AppModule"
+      ]
+    }
+  ]
+}

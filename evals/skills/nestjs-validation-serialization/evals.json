@@ -1,0 +1,43 @@
+{
+  "skill_name": "nestjs-validation-serialization",
+  "evals": [
+    {
+      "id": "val-1",
+      "prompt": "Add POST /products that creates a product in memory and returns it with an id. Validate the body: name is a required non-empty string, price is a positive number, tags is an optional array of strings. Reject unknown fields. Invalid input must return 400 with details.",
+      "expected_output": "Validation applied app-wide (ValidationPipe with whitelist/forbidNonWhitelisted, or Standard Schema validation with a strict schema); valid bodies return 201.",
+      "assertions": [
+        "A valid body returns 201 with an id",
+        "Missing name returns 400",
+        "Negative price returns 400",
+        "Non-string tags return 400",
+        "An unknown field returns 400",
+        "price sent as the string \"5\" returns 400 (no silent coercion of body numbers)"
+      ]
+    },
+    {
+      "id": "val-2",
+      "overlay": "users-module",
+      "prompt": "GET /users/:id and POST /users return the passwordHash field. Make sure passwordHash is never serialized in any user response, now or in future user endpoints.",
+      "expected_output": "Centralized response shaping (ClassSerializerInterceptor + @Exclude, or StandardSchemaSerializerInterceptor with a response schema) instead of deleting the field per route.",
+      "assertions": [
+        "GET /users/1 returns the user without passwordHash",
+        "POST /users returns the created user without passwordHash",
+        "Exclusion is centralized (global interceptor / serializer / response schema), not per handler",
+        "Uses Nest's documented serialization (ClassSerializerInterceptor + @Exclude, or StandardSchemaSerializerInterceptor)"
+      ]
+    },
+    {
+      "id": "val-3",
+      "prompt": "Add GET /items?page=&limit= returning { page, limit, items } from a static list. page and limit arrive as query strings: convert them to integers, default page=1 and limit=20, cap limit at 100, and return 400 for non-numeric or out-of-range values (page < 1, limit < 1 or > 100).",
+      "expected_output": "Query DTO or schema with transformation and defaults; numbers in the response are numbers.",
+      "assertions": [
+        "No params returns page 1 and limit 20 as numbers",
+        "page=2&limit=10 returns 2 and 10 as numbers",
+        "limit=500 returns 400",
+        "page=abc returns 400",
+        "page=0 returns 400",
+        "[docs] Query parsing uses pipes or a validated query DTO/schema, not manual parsing in the service"
+      ]
+    }
+  ]
+}

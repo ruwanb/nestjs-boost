@@ -1,0 +1,36 @@
+{
+  "skill_name": "nestjs-logging",
+  "evals": [
+    {
+      "id": "log-1",
+      "overlay": "users-module",
+      "env": { "NODE_ENV": "production" },
+      "prompt": "In production we ship logs to an aggregator that expects one JSON object per line. Switch the app to JSON logs in production, and in UsersService log 'User created' with the userId and email as structured fields when a user is created.",
+      "expected_output": "ConsoleLogger with json: true (in production) and logger.log('User created', { userId, email }) using v12 structured params.",
+      "assertions": [
+        "With NODE_ENV=production, log lines are JSON",
+        "Creating a user writes a JSON log entry with message 'User created' carrying userId and email as fields",
+        "Logging uses Nest's Logger, not console.log"
+      ]
+    },
+    {
+      "id": "log-2",
+      "prompt": "Add a request ID to every request: reuse the incoming x-request-id header or generate one, return it in the x-request-id response header, and include it in every log line written while handling that request, including logs from services.",
+      "expected_output": "AsyncLocalStorage-based context (custom ALS module or nestjs-cls) set in middleware; logger reads the ID from the store.",
+      "assertions": [
+        "An incoming x-request-id is echoed in the response header",
+        "A request without the header gets a generated x-request-id",
+        "The request ID is propagated through AsyncLocalStorage (or nestjs-cls), not passed manually through method arguments"
+      ]
+    },
+    {
+      "id": "log-3",
+      "prompt": "Replace the default logger with a custom logger service that prefixes every message with [api] and can inject other providers. Logs produced during bootstrap must go through it as well.",
+      "expected_output": "Custom logger extending ConsoleLogger registered as a provider; NestFactory.create(..., { bufferLogs: true }); app.useLogger(app.get(CustomLogger)).",
+      "assertions": [
+        "Bootstrap log lines contain [api]",
+        "bufferLogs: true is set and the logger is obtained from the container (app.get)"
+      ]
+    }
+  ]
+}

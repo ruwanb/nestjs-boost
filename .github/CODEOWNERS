@@ -1,0 +1,11 @@
+# Every change needs the owner's review (enforced by the main-branch ruleset).
+*                     @ruwanb
+
+# Files that control what reaches users and how releases are published.
+/.github/             @ruwanb
+/bin/                 @ruwanb
+/lib/                 @ruwanb
+/scripts/             @ruwanb
+/skills/              @ruwanb
+/guidelines/          @ruwanb
+/package.json         @ruwanb

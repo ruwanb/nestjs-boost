@@ -1,0 +1,44 @@
+{
+  "skill_name": "nestjs-request-pipeline",
+  "evals": [
+    {
+      "id": "pipe-1",
+      "env": {
+        "API_KEY": "s3cret"
+      },
+      "prompt": "Protect the whole API with an API key: every request must send an x-api-key header equal to the API_KEY environment variable, otherwise respond 401. Add GET /health returning { status: 'ok' } that stays public without a key, and make it easy to mark other routes public later. Keep the tests passing.",
+      "expected_output": "A guard bound globally (APP_GUARD) that reads public-route metadata via Reflector; /health marked public; tests updated.",
+      "assertions": [
+        "GET / without a key returns 401",
+        "GET / with the correct key returns 200",
+        "GET /health without a key returns 200 { status: 'ok' }",
+        "The guard is bound globally (APP_GUARD provider or useGlobalGuards)",
+        "Public routes are marked with a metadata decorator read through Reflector"
+      ]
+    },
+    {
+      "id": "pipe-2",
+      "prompt": "Standardize our error responses. Every error should be JSON with statusCode, message, errorCode (a stable machine-readable string clients can branch on), path and timestamp. Add POST /orders that returns 400 with errorCode ORDER_EMPTY when the items array is missing or empty, and 201 with the order otherwise.",
+      "expected_output": "A global exception filter (or the v12 errorCode support) shaping all errors; POST /orders throws BadRequestException with errorCode ORDER_EMPTY.",
+      "assertions": [
+        "POST /orders with no items returns 400 with errorCode ORDER_EMPTY, path /orders and a timestamp",
+        "POST /orders with items returns 201",
+        "An unknown route returns 404 with statusCode, errorCode, path and timestamp",
+        "The error shape is applied globally (APP_FILTER or useGlobalFilters), not per route",
+        "[docs] Uses the v12 errorCode exception option rather than a custom exception class to carry the code"
+      ]
+    },
+    {
+      "id": "pipe-3",
+      "overlay": "route-shadow",
+      "prompt": "GET /users/me returns 404 'User NaN not found' instead of the current user. Fix it, and make sure this kind of route bug can't slip through silently again.",
+      "expected_output": "GET /users/me returns user 1; the fix addresses route ordering, ideally enabling Nest 12's route conflict diagnostics (routeConflictPolicy) or specificity-based resolution.",
+      "assertions": [
+        "GET /users/me returns 200 with user 1",
+        "GET /users/1 still returns 200",
+        "Route conflict diagnostics or specificity resolution is enabled (routeConflictPolicy / routeResolutionStrategy) or a regression test covers /users/me",
+        "[docs] Enables Nest 12 route conflict diagnostics or specificity resolution (routeConflictPolicy / routeResolutionStrategy)"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "skill_name": "nestjs-configuration",
+  "evals": [
+    {
+      "id": "cfg-1",
+      "prompt": "Load configuration from environment variables and a .env file using @nestjs/config, and validate it at startup: PORT is a number defaulting to 3000, DATABASE_URL is required and must be a URL. The app must refuse to start with a clear error when DATABASE_URL is missing. Use PORT from the config in main.ts.",
+      "expected_output": "ConfigModule.forRoot with a Standard Schema (e.g. Zod) validationSchema or a validate function; main.ts reads PORT through ConfigService.",
+      "assertions": [
+        "Starts with DATABASE_URL set and listens on PORT",
+        "Refuses to start without DATABASE_URL, mentioning DATABASE_URL",
+        "If Joi is used, it is v18+ and library options sit under validationOptions.libraryOptions",
+        "[docs] Validates with a Standard Schema library (Zod/Valibot/ArkType) or a validate() function, as the docs recommend for new code, rather than Joi"
+      ]
+    },
+    {
+      "id": "cfg-2",
+      "prompt": "Add typed, namespaced database configuration with host and port read from DB_HOST and DB_PORT (defaults localhost and 5432). Inject it into a new DatabaseInfoService and expose GET /db-info returning { host, port } with port as a number. Use the config module's typed approach rather than string keys.",
+      "expected_output": "registerAs('database', ...) with ConfigType<typeof databaseConfig> injected via @Inject(databaseConfig.KEY).",
+      "assertions": [
+        "With DB_HOST=db.internal DB_PORT=6543, GET /db-info returns host db.internal and port 6543 (number)",
+        "Without them, GET /db-info returns localhost and 5432",
+        "Uses registerAs with ConfigType / .KEY injection"
+      ]
+    },
+    {
+      "id": "cfg-3",
+      "prompt": "Make configuration available in every module without importing ConfigModule each time. Then read FEATURE_GREETING (default 'Hello') in AppService.getHello() so GET / returns '<FEATURE_GREETING> World!'.",
+      "expected_output": "ConfigModule.forRoot({ isGlobal: true }); AppService injects ConfigService.",
+      "assertions": [
+        "With FEATURE_GREETING=Hi, GET / returns 'Hi World!'",
+        "Without it, GET / returns 'Hello World!'",
+        "ConfigModule is registered with isGlobal: true"
+      ]
+    }
+  ]
+}

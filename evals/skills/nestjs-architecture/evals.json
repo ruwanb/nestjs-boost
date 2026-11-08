@@ -1,0 +1,42 @@
+{
+  "skill_name": "nestjs-architecture",
+  "evals": [
+    {
+      "id": "arch-1",
+      "overlay": "users-module",
+      "prompt": "Add a notifications feature to this NestJS app: a NotificationsService with sendWelcome(email) that records sent notifications in memory, plus GET /notifications that lists them. When POST /users creates a user, it should send a welcome notification. Keep the feature modules properly separated.",
+      "expected_output": "A NotificationsModule that provides and exports NotificationsService; UsersModule imports it; creating a user records a welcome notification visible at GET /notifications.",
+      "assertions": [
+        "POST /users then GET /notifications lists a notification for the new user's email",
+        "NotificationsModule exports NotificationsService",
+        "UsersModule imports NotificationsModule",
+        "NotificationsService is not re-registered in UsersModule providers",
+        "No @Global() module was introduced"
+      ]
+    },
+    {
+      "id": "arch-2",
+      "overlay": "payments-interface",
+      "prompt": "Create a PaymentsService that receives the payment gateway settings through DI. The settings are typed by our existing interface PaymentGatewayOptions in src/payments/payment-gateway-options.ts; use { apiUrl: 'https://pay.example.com', timeoutMs: 5000 }. Add describe() returning the settings and expose it at GET /payments/config.",
+      "expected_output": "Settings provided under an injection token (string, symbol or InjectionToken) and injected with @Inject(token); the app boots and GET /payments/config returns the settings.",
+      "assertions": [
+        "App boots (no unresolved dependency)",
+        "GET /payments/config returns apiUrl https://pay.example.com and timeoutMs 5000",
+        "Settings are injected through a runtime token (@Inject(token), or an abstract class used as the token), not the interface type"
+      ]
+    },
+    {
+      "id": "arch-3",
+      "overlay": "broken-deps",
+      "prompt": "The app crashes on startup with: Nest can't resolve dependencies of the OrdersService (?). Please make sure that the argument UsersService at index [0] is available in the OrdersModule module. Fix it properly.",
+      "expected_output": "UsersModule exports UsersService; OrdersModule keeps importing UsersModule; UsersService is not duplicated into OrdersModule providers.",
+      "assertions": [
+        "App boots",
+        "GET /orders/user/1 returns the user's orders",
+        "UsersModule exports UsersService",
+        "UsersService is not added to OrdersModule providers (no second instance)",
+        "No @Global() module was introduced"
+      ]
+    }
+  ]
+}

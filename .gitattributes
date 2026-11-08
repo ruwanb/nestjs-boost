@@ -1,0 +1,6 @@
+# Store and check out text files with LF line endings on every OS, so the published package and
+# the skills are identical whether released from Windows or from CI.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.tgz binary

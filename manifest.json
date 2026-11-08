@@ -1,0 +1,676 @@
+{
+  "pack": "nestjs-boost",
+  "version": "1.2.0",
+  "nestjs": {
+    "targetMajor": 12,
+    "supportedRange": ">=12 <13"
+  },
+  "docs": {
+    "repo": "nestjs/docs.nestjs.com",
+    "commit": "f321ff1725d8190a2e19c2b2067f47b2aa1642ee",
+    "crawled": "2026-11-05"
+  },
+  "agents": [
+    "claude-code",
+    "codex",
+    "copilot",
+    "cursor",
+    "gemini",
+    "windsurf",
+    "cline",
+    "roo",
+    "kiro",
+    "junie",
+    "opencode"
+  ],
+  "skills": [
+    {
+      "name": "nestjs-architecture",
+      "layer": "foundation",
+      "installWhen": {
+        "always": true
+      },
+      "docPages": [
+        "https://docs.nestjs.com/first-steps",
+        "https://docs.nestjs.com/providers",
+        "https://docs.nestjs.com/modules",
+        "https://docs.nestjs.com/fundamentals/custom-providers",
+        "https://docs.nestjs.com/fundamentals/async-providers",
+        "https://docs.nestjs.com/fundamentals/dynamic-modules",
+        "https://docs.nestjs.com/fundamentals/injection-scopes",
+        "https://docs.nestjs.com/fundamentals/circular-dependency",
+        "https://docs.nestjs.com/fundamentals/module-ref",
+        "https://docs.nestjs.com/fundamentals/lazy-loading-modules",
+        "https://docs.nestjs.com/fundamentals/lifecycle-events",
+        "https://docs.nestjs.com/fundamentals/discovery-service",
+        "https://docs.nestjs.com/fundamentals/platform-agnosticism",
+        "https://docs.nestjs.com/faq/common-errors"
+      ]
+    },
+    {
+      "name": "nestjs-request-pipeline",
+      "layer": "foundation",
+      "installWhen": {
+        "always": true
+      },
+      "docPages": [
+        "https://docs.nestjs.com/controllers",
+        "https://docs.nestjs.com/middleware",
+        "https://docs.nestjs.com/exception-filters",
+        "https://docs.nestjs.com/pipes",
+        "https://docs.nestjs.com/guards",
+        "https://docs.nestjs.com/interceptors",
+        "https://docs.nestjs.com/custom-decorators",
+        "https://docs.nestjs.com/fundamentals/execution-context",
+        "https://docs.nestjs.com/faq/request-lifecycle",
+        "https://docs.nestjs.com/faq/global-prefix",
+        "https://docs.nestjs.com/recipes/router-module"
+      ]
+    },
+    {
+      "name": "nestjs-validation-serialization",
+      "layer": "foundation",
+      "installWhen": {
+        "always": true
+      },
+      "docPages": [
+        "https://docs.nestjs.com/application/validation",
+        "https://docs.nestjs.com/application/serialization"
+      ]
+    },
+    {
+      "name": "nestjs-configuration",
+      "layer": "foundation",
+      "installWhen": {
+        "always": true
+      },
+      "docPages": [
+        "https://docs.nestjs.com/application/configuration"
+      ]
+    },
+    {
+      "name": "nestjs-testing",
+      "layer": "foundation",
+      "installWhen": {
+        "always": true
+      },
+      "docPages": [
+        "https://docs.nestjs.com/fundamentals/testing"
+      ]
+    },
+    {
+      "name": "nestjs-cli-tooling",
+      "layer": "foundation",
+      "installWhen": {
+        "always": true
+      },
+      "docPages": [
+        "https://docs.nestjs.com/cli/overview",
+        "https://docs.nestjs.com/cli/monorepo",
+        "https://docs.nestjs.com/cli/libraries",
+        "https://docs.nestjs.com/cli/usages",
+        "https://docs.nestjs.com/cli/scripts",
+        "https://docs.nestjs.com/recipes/repl",
+        "https://docs.nestjs.com/recipes/crud-generator",
+        "https://docs.nestjs.com/recipes/swc",
+        "https://docs.nestjs.com/recipes/hot-reload",
+        "https://docs.nestjs.com/devtools/overview",
+        "https://docs.nestjs.com/devtools/ci-cd-integration"
+      ]
+    },
+    {
+      "name": "nestjs-logging",
+      "layer": "foundation",
+      "installWhen": {
+        "always": true
+      },
+      "docPages": [
+        "https://docs.nestjs.com/application/logger",
+        "https://docs.nestjs.com/recipes/async-local-storage"
+      ]
+    },
+    {
+      "name": "nestjs-security-hardening",
+      "layer": "foundation",
+      "installWhen": {
+        "always": true
+      },
+      "docPages": [
+        "https://docs.nestjs.com/security/helmet",
+        "https://docs.nestjs.com/security/cors",
+        "https://docs.nestjs.com/security/csrf",
+        "https://docs.nestjs.com/security/rate-limiting",
+        "https://docs.nestjs.com/security/encryption-and-hashing"
+      ]
+    },
+    {
+      "name": "nestjs-http-platform",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/platform-express",
+          "@nestjs/platform-fastify",
+          "@nestjs/platform-node"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/http/performance",
+        "https://docs.nestjs.com/faq/http-adapter",
+        "https://docs.nestjs.com/faq/keep-alive-connections",
+        "https://docs.nestjs.com/faq/raw-body",
+        "https://docs.nestjs.com/faq/multiple-servers",
+        "https://docs.nestjs.com/http/versioning",
+        "https://docs.nestjs.com/http/compression"
+      ]
+    },
+    {
+      "name": "nestjs-http-web-features",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/platform-express",
+          "@nestjs/platform-fastify",
+          "@nestjs/platform-node"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/http/cookies",
+        "https://docs.nestjs.com/http/session",
+        "https://docs.nestjs.com/http/file-upload",
+        "https://docs.nestjs.com/http/server-sent-events",
+        "https://docs.nestjs.com/http/mvc",
+        "https://docs.nestjs.com/recipes/serve-static"
+      ]
+    },
+    {
+      "name": "nestjs-authentication",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/authentication"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/security/authentication"
+      ]
+    },
+    {
+      "name": "nestjs-passport-auth",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/passport",
+          "@nestjs/jwt"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/recipes/passport"
+      ]
+    },
+    {
+      "name": "nestjs-authorization",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/authorization"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/security/authorization"
+      ]
+    },
+    {
+      "name": "nestjs-database-typeorm",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/typeorm"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/data/typeorm"
+      ]
+    },
+    {
+      "name": "nestjs-database-drizzle",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/drizzle"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/data/drizzle"
+      ]
+    },
+    {
+      "name": "nestjs-database-mongoose",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/mongoose"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/data/mongodb"
+      ]
+    },
+    {
+      "name": "nestjs-database-prisma",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@prisma/client",
+          "prisma"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/data/prisma"
+      ]
+    },
+    {
+      "name": "nestjs-database-mikro-orm",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@mikro-orm/nestjs"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/data/mikroorm"
+      ]
+    },
+    {
+      "name": "nestjs-database-sequelize",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/sequelize"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/data/sequelize"
+      ]
+    },
+    {
+      "name": "nestjs-caching",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/cache-manager"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/data/caching"
+      ]
+    },
+    {
+      "name": "nestjs-http-client",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/http-client",
+          "@nestjs/axios"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/application/http-client"
+      ]
+    },
+    {
+      "name": "nestjs-events",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/event-emitter"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/application/events"
+      ]
+    },
+    {
+      "name": "nestjs-scheduling",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/schedule"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/application/task-scheduling"
+      ]
+    },
+    {
+      "name": "nestjs-queues",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/bullmq",
+          "@nestjs/bull"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/application/queues"
+      ]
+    },
+    {
+      "name": "nestjs-mail",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/mail"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/application/mail"
+      ]
+    },
+    {
+      "name": "nestjs-i18n",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/i18n"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/application/i18n"
+      ]
+    },
+    {
+      "name": "nestjs-file-storage",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/storage"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/application/file-storage"
+      ]
+    },
+    {
+      "name": "nestjs-webhooks",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/webhooks"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/http/webhooks"
+      ]
+    },
+    {
+      "name": "nestjs-observability",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/observe",
+          "@opentelemetry/sdk-node"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/observability/overview",
+        "https://docs.nestjs.com/observability/sdk",
+        "https://docs.nestjs.com/observability/manual-instrumentation",
+        "https://docs.nestjs.com/observability/distributed-tracing",
+        "https://docs.nestjs.com/observability/error-monitoring",
+        "https://docs.nestjs.com/observability/dashboard",
+        "https://docs.nestjs.com/observability/production-rules",
+        "https://docs.nestjs.com/observability/mcp-server",
+        "https://docs.nestjs.com/observability/opentelemetry",
+        "https://docs.nestjs.com/observability/choosing-an-apm"
+      ]
+    },
+    {
+      "name": "nestjs-health-checks",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/terminus"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/reliability/terminus"
+      ]
+    },
+    {
+      "name": "nestjs-resilience",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/resilience"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/reliability/resilience"
+      ]
+    },
+    {
+      "name": "nestjs-idempotency",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/idempotency"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/reliability/idempotency"
+      ]
+    },
+    {
+      "name": "nestjs-outbox",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/outbox"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/reliability/outbox"
+      ]
+    },
+    {
+      "name": "nestjs-workflows",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/workflows"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/reliability/workflows"
+      ]
+    },
+    {
+      "name": "nestjs-locks",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/locks"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/reliability/locks"
+      ]
+    },
+    {
+      "name": "nestjs-cqrs",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/cqrs"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/recipes/cqrs"
+      ]
+    },
+    {
+      "name": "nestjs-graphql",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/graphql"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/graphql/quick-start",
+        "https://docs.nestjs.com/graphql/resolvers",
+        "https://docs.nestjs.com/graphql/mutations",
+        "https://docs.nestjs.com/graphql/subscriptions",
+        "https://docs.nestjs.com/graphql/scalars",
+        "https://docs.nestjs.com/graphql/directives",
+        "https://docs.nestjs.com/graphql/interfaces",
+        "https://docs.nestjs.com/graphql/unions-and-enums",
+        "https://docs.nestjs.com/graphql/field-middleware",
+        "https://docs.nestjs.com/graphql/mapped-types",
+        "https://docs.nestjs.com/graphql/plugins",
+        "https://docs.nestjs.com/graphql/complexity",
+        "https://docs.nestjs.com/graphql/extensions",
+        "https://docs.nestjs.com/graphql/cli-plugin",
+        "https://docs.nestjs.com/graphql/generating-sdl",
+        "https://docs.nestjs.com/graphql/sharing-models",
+        "https://docs.nestjs.com/graphql/other-features",
+        "https://docs.nestjs.com/graphql/federation"
+      ]
+    },
+    {
+      "name": "nestjs-websockets",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/websockets"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/websockets/gateways",
+        "https://docs.nestjs.com/websockets/exception-filters",
+        "https://docs.nestjs.com/websockets/pipes",
+        "https://docs.nestjs.com/websockets/guards",
+        "https://docs.nestjs.com/websockets/interceptors",
+        "https://docs.nestjs.com/websockets/adapter"
+      ]
+    },
+    {
+      "name": "nestjs-mcp-server",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/mcp"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/mcp/overview",
+        "https://docs.nestjs.com/mcp/primitives",
+        "https://docs.nestjs.com/mcp/transports",
+        "https://docs.nestjs.com/mcp/testing",
+        "https://docs.nestjs.com/mcp/migration"
+      ]
+    },
+    {
+      "name": "nestjs-microservices",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/microservices"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/microservices/basics",
+        "https://docs.nestjs.com/microservices/redis",
+        "https://docs.nestjs.com/microservices/mqtt",
+        "https://docs.nestjs.com/microservices/nats",
+        "https://docs.nestjs.com/microservices/rabbitmq",
+        "https://docs.nestjs.com/microservices/kafka",
+        "https://docs.nestjs.com/microservices/grpc",
+        "https://docs.nestjs.com/microservices/custom-transport",
+        "https://docs.nestjs.com/microservices/exception-filters",
+        "https://docs.nestjs.com/microservices/pipes",
+        "https://docs.nestjs.com/microservices/pre-request-hooks",
+        "https://docs.nestjs.com/microservices/guards",
+        "https://docs.nestjs.com/microservices/interceptors",
+        "https://docs.nestjs.com/faq/hybrid-application"
+      ]
+    },
+    {
+      "name": "nestjs-openapi",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/swagger"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/openapi/introduction",
+        "https://docs.nestjs.com/openapi/types-and-parameters",
+        "https://docs.nestjs.com/openapi/operations",
+        "https://docs.nestjs.com/openapi/security",
+        "https://docs.nestjs.com/openapi/mapped-types",
+        "https://docs.nestjs.com/openapi/decorators",
+        "https://docs.nestjs.com/openapi/cli-plugin",
+        "https://docs.nestjs.com/openapi/other-features"
+      ]
+    },
+    {
+      "name": "nestjs-standalone-apps",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "nest-commander"
+        ],
+        "optIn": true
+      },
+      "docPages": [
+        "https://docs.nestjs.com/standalone-applications",
+        "https://docs.nestjs.com/recipes/nest-commander"
+      ]
+    },
+    {
+      "name": "nestjs-deployment",
+      "layer": "conditional",
+      "installWhen": {
+        "anyFile": [
+          "Dockerfile",
+          "serverless.yml",
+          "serverless.ts"
+        ],
+        "optIn": true
+      },
+      "docPages": [
+        "https://docs.nestjs.com/deployment",
+        "https://docs.nestjs.com/faq/serverless",
+        "https://docs.nestjs.com/recipes/socket-activation"
+      ]
+    },
+    {
+      "name": "nestjs-upgrading",
+      "layer": "conditional",
+      "installWhen": {
+        "nestjsMajorBelow": 12,
+        "optIn": true
+      },
+      "docPages": [
+        "https://docs.nestjs.com/migration-guide"
+      ]
+    },
+    {
+      "name": "nestjs-ai",
+      "layer": "conditional",
+      "installWhen": {
+        "anyDependency": [
+          "@nestjs/ai"
+        ]
+      },
+      "docPages": [
+        "https://docs.nestjs.com/ai/overview",
+        "https://docs.nestjs.com/ai/models",
+        "https://docs.nestjs.com/ai/tools",
+        "https://docs.nestjs.com/ai/agents",
+        "https://docs.nestjs.com/ai/testing"
+      ]
+    }
+  ]
+}

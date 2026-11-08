@@ -1,0 +1,150 @@
+[
+  {
+    "query": "make the tenant service request-scoped so each request gets its own tenant",
+    "expected_skill": "nestjs-architecture"
+  },
+  {
+    "query": "how should I split my billing stuff into its own module so other parts of the app can use it",
+    "expected_skill": "nestjs-architecture"
+  },
+  {
+    "query": "close the redis connection cleanly when the app shuts down (SIGTERM in k8s)",
+    "expected_skill": "nestjs-architecture"
+  },
+  {
+    "query": "I have a circular import between OrdersModule and CustomersModule, how do I fix it properly",
+    "expected_skill": "nestjs-architecture"
+  },
+  {
+    "query": "why isn't my guard running before my interceptor? what's the actual order of execution",
+    "expected_skill": "nestjs-request-pipeline"
+  },
+  {
+    "query": "wrap every response in { data: ... } automatically",
+    "expected_skill": "nestjs-request-pipeline"
+  },
+  {
+    "query": "add middleware that logs method and url for every request, but skip /health",
+    "expected_skill": "nestjs-request-pipeline"
+  },
+  {
+    "query": "time every handler and add an X-Response-Time header",
+    "expected_skill": "nestjs-request-pipeline"
+  },
+  {
+    "query": "query params are strings, I need page and limit as numbers with defaults",
+    "expected_skill": "nestjs-validation-serialization"
+  },
+  {
+    "query": "validate a discriminated union body: payment is either card or bank transfer",
+    "expected_skill": "nestjs-validation-serialization"
+  },
+  {
+    "query": "strip unknown properties from incoming payloads",
+    "expected_skill": "nestjs-validation-serialization"
+  },
+  {
+    "query": "nested array of line items in the order body isn't being validated",
+    "expected_skill": "nestjs-validation-serialization"
+  },
+  {
+    "query": "upgrading: my Joi validationSchema options allowUnknown/abortEarly stopped working",
+    "expected_skill": "nestjs-configuration"
+  },
+  {
+    "query": "ConfigService is undefined in my feature module",
+    "expected_skill": "nestjs-configuration"
+  },
+  {
+    "query": "expand ${VAR} references inside the .env file",
+    "expected_skill": "nestjs-configuration"
+  },
+  {
+    "query": "different config for dev, staging and prod env files",
+    "expected_skill": "nestjs-configuration"
+  },
+  {
+    "query": "test a request-scoped provider",
+    "expected_skill": "nestjs-testing"
+  },
+  {
+    "query": "override a provider with a fake in the testing module",
+    "expected_skill": "nestjs-testing"
+  },
+  {
+    "query": "how do I get a coverage report for my nest tests",
+    "expected_skill": "nestjs-testing"
+  },
+  {
+    "query": "auto-mock all the dependencies of a service in a test",
+    "expected_skill": "nestjs-testing"
+  },
+  {
+    "query": "I want a REPL to call my services against the running app",
+    "expected_skill": "nestjs-cli-tooling"
+  },
+  {
+    "query": "set up nest devtools to see the dependency graph",
+    "expected_skill": "nestjs-cli-tooling"
+  },
+  {
+    "query": "generate a full CRUD resource for invoices",
+    "expected_skill": "nestjs-cli-tooling"
+  },
+  {
+    "query": "builds are really slow, can we use swc",
+    "expected_skill": "nestjs-cli-tooling"
+  },
+  {
+    "query": "log structured fields like orderId with the message",
+    "expected_skill": "nestjs-logging"
+  },
+  {
+    "query": "use a custom logger everywhere, including the startup logs",
+    "expected_skill": "nestjs-logging"
+  },
+  {
+    "query": "switch to JSON logs in production for datadog",
+    "expected_skill": "nestjs-logging"
+  },
+  {
+    "query": "disable debug and verbose logs in production",
+    "expected_skill": "nestjs-logging"
+  },
+  {
+    "query": "behind a load balancer the rate limiter sees the same IP for everyone",
+    "expected_skill": "nestjs-security-hardening"
+  },
+  {
+    "query": "login endpoint gets brute-forced, limit attempts",
+    "expected_skill": "nestjs-security-hardening"
+  },
+  {
+    "query": "protect cookie-based forms against CSRF",
+    "expected_skill": "nestjs-security-hardening"
+  },
+  {
+    "query": "hash passwords before saving users",
+    "expected_skill": "nestjs-security-hardening"
+  },
+  {
+    "query": "document the bearer auth scheme in the openapi spec",
+    "expected_skill": "nestjs-openapi"
+  },
+  {
+    "query": "add email/password sign-in with sessions and password reset",
+    "expected_skill": "nestjs-authentication"
+  },
+  {
+    "query": "add a graphql resolver for products",
+    "expected_skill": "nestjs-graphql"
+  },
+  {
+    "query": "explain the difference between let and const in typescript",
+    "expected_skill": "none"
+  },
+  {
+    "query": "write a SQL query that returns the top 5 customers by revenue",
+    "expected_skill": "none"
+  }
+]

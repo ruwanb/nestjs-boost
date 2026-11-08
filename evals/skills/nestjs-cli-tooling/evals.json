@@ -1,0 +1,36 @@
+{
+  "skill_name": "nestjs-cli-tooling",
+  "evals": [
+    {
+      "id": "cli-1",
+      "prompt": "Scaffold a complete CRUD REST resource for 'orders' (controller, service, DTOs, entity, tests) the standard Nest way and wire it into the app.",
+      "expected_output": "Generated with `nest g resource orders` (REST, CRUD entry points); OrdersModule imported in AppModule.",
+      "assertions": [
+        "Controller, service, create/update DTOs, entity and spec files exist under src/orders",
+        "AppModule imports OrdersModule",
+        "GET /orders returns 200"
+      ]
+    },
+    {
+      "id": "cli-2",
+      "prompt": "Turn this project into a monorepo: keep the current app as the main API, add a second app called 'worker', and add a shared library 'common' exposing CommonService.ping() that returns 'pong', used by both apps.",
+      "expected_output": "`nest g app worker` and `nest g library common`; nest-cli.json monorepo: true; both apps import from @app/common.",
+      "assertions": [
+        "nest-cli.json has monorepo: true with projects for the worker app and the common library",
+        "The worker app builds",
+        "Both apps import CommonService from the library's path alias"
+      ]
+    },
+    {
+      "id": "cli-3",
+      "prompt": "Our builds are slow. Switch the project to the SWC compiler while keeping type checking, and make sure the build and the tests still work.",
+      "expected_output": "nest-cli.json compilerOptions.builder 'swc' with typeCheck: true; @swc/cli and @swc/core installed.",
+      "assertions": [
+        "nest-cli.json sets the SWC builder",
+        "Type checking stays enabled (typeCheck: true)",
+        "@swc/cli and @swc/core are dev dependencies",
+        "The built app starts"
+      ]
+    }
+  ]
+}
