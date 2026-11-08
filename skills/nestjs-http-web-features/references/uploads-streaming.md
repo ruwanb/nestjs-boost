@@ -42,14 +42,20 @@ Disk storage with safe names:
 
 ```typescript
 import { diskStorage } from 'multer';
+// The extension comes from an allowlist keyed by MIME type, never from `file.originalname`: a
+// client-chosen `.html` / `.svg` served back from the uploads folder is stored XSS.
+const EXT: Record<string, string> = { 'image/png': '.png', 'image/jpeg': '.jpg', 'application/pdf': '.pdf' };
 FileInterceptor('file', {
   storage: diskStorage({
     destination: './uploads',
-    filename: (_req, file, cb) => cb(null, `${randomUUID()}${extname(file.originalname)}`),
+    filename: (_req, file, cb) => cb(null, `${randomUUID()}${EXT[file.mimetype] ?? ''}`),
   }),
+  fileFilter: (_req, file, cb) => cb(null, file.mimetype in EXT),   // unknown types are skipped
   limits: { fileSize: 50 * 1024 * 1024 },
 });
 ```
+
+`file.mimetype` is what the client claims; still check the saved file's content (magic number, `FileTypeValidator`) before trusting it. Serve uploads from a separate origin or with `Content-Disposition: attachment` and `X-Content-Type-Options: nosniff`, and never pass `file.originalname` to a filesystem path.
 
 A `destination` function (instead of a string) means you must create the directory. `FileInterceptor()` may not work on some cloud platforms such as Firebase.
 

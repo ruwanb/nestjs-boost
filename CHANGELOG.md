@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.2.2 — 2026-11-08
+
+### Added
+- **Skill menu.** After the agent question, `npx nestjs-boost install` asks which skills you want: **Only matching skills** (default: foundation plus skills for your packages), **All skills**, or **Choose skills**. Choose skills lists all 45 with the matching ones ticked and the package each is for; long lists scroll. Before, only matching skills were installed; the rest needed `--include` or `--all`, which the installer never mentioned.
+- Skill choices (menu, `--include`, `--exclude`, `--all`) are saved in `.ai/nestjs-boost.lock.json` and kept on later runs, and the menu starts on the option you used last.
+
+### Security
+- **Terminal escape injection:** text that comes from the project (lock-file entries, folder names, dependency versions, config values in error messages) is now escaped before it's printed. A hostile repository could otherwise send ANSI/OSC sequences to your terminal, such as hiding or faking output or writing the clipboard with OSC 52, or use bidi overrides to reorder what you read.
+- **Prototype pollution in detection:** dependencies are merged into a null-prototype map from own string entries only. A `"__proto__"` key in a `package.json` dependency list could change the merged object's prototype and make packages look installed.
+- Skill copies skip FIFOs, sockets and devices, not only links, so a special file in `.ai/skills/` can't hang or crash an install.
+- `nestjs-request-pipeline`: the API key guard example compares the key in constant time (`timingSafeEqual` after a length check) and rejects non-string headers. The `!==` comparison it showed leaked timing, and agents copy these examples.
+- `nestjs-http-web-features`: the Multer disk-storage example no longer takes the file extension from `file.originalname`, since a client-chosen `.html` / `.svg` served from the uploads folder is stored XSS. It now maps allowlisted MIME types to extensions and filters out the rest, with guidance on serving uploads safely.
+
+### Fixed
+- The guidelines block now uses the instructions file's own line endings, and removing it (switching agents, `--no-guidelines`, `uninstall`) restores the file byte for byte. Before, a CRLF `AGENTS.md` / `CLAUDE.md` got mixed line endings and kept a one-character diff after uninstall.
+
+### Removed
+- **The `postinstall` script.** npm 11 and pnpm 10 block dependency install scripts until approved, so every install printed an "install-scripts not yet covered by allowScripts" warning and the sync didn't run anyway. The package now has no install scripts. Run `npx nestjs-boost install --yes` after adding Nest packages, or add it to your own `prepare` script. `NESTJS_BOOST_SKIP` and `NESTJS_BOOST_CI` are gone with it.
+
 ## 1.2.1 — 2026-11-08
 
 - README: tidier Credits section.

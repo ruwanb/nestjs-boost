@@ -8,7 +8,6 @@ import { fileURLToPath } from 'node:url';
 import { LOCK, detectAgents, hashDir, removeBlock, sync, uninstall, upsertBlock } from '../lib/installer.mjs';
 
 const CLI = fileURLToPath(new URL('../bin/nestjs-boost.mjs', import.meta.url));
-const POSTINSTALL = fileURLToPath(new URL('../scripts/postinstall.mjs', import.meta.url));
 const dirs = [];
 
 function project(pkg = {}, files = {}) {
@@ -159,6 +158,24 @@ describe('markers', () => {
     assert.equal(removeBlock(text), '# A\n');
     assert.equal(upsertBlock(text, 'new'), '# A\n\n<!-- nestjs-boost:start -->\nnew\n<!-- nestjs-boost:end -->\n');
   });
+
+  it('gives back the exact original bytes, keeping CRLF line endings', () => {
+    for (const original of ['# A\n', '# A\r\n\r\nrules\r\n', '# A\n\n\n', '# A\n\nend with blank\n\n']) {
+      const withBlock = upsertBlock(original, 'line 1\nline 2');
+      assert.ok(withBlock.startsWith(original), 'user text untouched');
+      if (original.includes('\r\n')) assert.ok(!/[^\r]\n/.test(withBlock), 'no mixed line endings');
+      assert.equal(removeBlock(upsertBlock(withBlock, 'refreshed')), original);
+    }
+  });
+
+  it('uninstall restores an existing CRLF file byte for byte', () => {
+    const original = '# Team rules\r\n\r\nUse pnpm.\r\n';
+    const root = project({}, { 'AGENTS.md': original });
+    sync(root, { agents: 'codex' });
+    assert.match(read(root, 'AGENTS.md'), /\r\n<!-- nestjs-boost:start -->\r\n/);
+    uninstall(root);
+    assert.equal(read(root, 'AGENTS.md'), original);
+  });
 });
 
 describe('cli', () => {
@@ -177,57 +194,6 @@ describe('cli', () => {
   });
 });
 
-describe('postinstall', () => {
-  const runHook = (env) => execFileSync('node', [POSTINSTALL], { encoding: 'utf8', env: { PATH: process.env.PATH, ...env } });
-
-  const direct = { dependencies: { 'nestjs-boost': '^1.0.0' } };
-
-  it('writes nothing until the project opts in, then keeps it in sync', () => {
-    const root = project(direct);
-    assert.match(runHook({ INIT_CWD: root }), /run `npx nestjs-boost install` once/);
-    assert.ok(!existsSync(join(root, '.claude')) && !existsSync(join(root, 'CLAUDE.md')));
-    sync(root);                                   // the user's explicit `nestjs-boost install`
-    rmSync(join(root, '.claude/skills/nestjs-architecture'), { recursive: true });
-    runHook({ INIT_CWD: root });
-    assert.ok(existsSync(join(root, '.claude/skills/nestjs-architecture/SKILL.md')));
-  });
-
-  it('treats a "nestjs-boost" package.json key as opt-in', () => {
-    const root = project({ ...direct, 'nestjs-boost': { agents: ['claude-code'] } });
-    runHook({ INIT_CWD: root });
-    assert.ok(existsSync(join(root, '.claude/skills/nestjs-architecture/SKILL.md')));
-  });
-
-  it('does nothing as a transitive dependency or under npx', () => {
-    const root = project();                       // nestjs-boost not a direct dependency
-    sync(root);
-    rmSync(join(root, '.claude/skills/nestjs-architecture'), { recursive: true });
-    runHook({ INIT_CWD: root });
-    assert.ok(!existsSync(join(root, '.claude/skills/nestjs-architecture')));
-    const viaNpx = project(direct);
-    sync(viaNpx);
-    rmSync(join(viaNpx, '.claude/skills/nestjs-architecture'), { recursive: true });
-    runHook({ INIT_CWD: viaNpx, npm_command: 'exec' });
-    assert.ok(!existsSync(join(viaNpx, '.claude/skills/nestjs-architecture')));
-  });
-
-  it('skips in CI, when disabled, and outside NestJS projects, and never fails', () => {
-    const root = project(direct);
-    sync(root);
-    rmSync(join(root, '.claude'), { recursive: true });
-    runHook({ INIT_CWD: root, CI: 'true' });
-    runHook({ INIT_CWD: root, NESTJS_BOOST_SKIP: '1' });
-    assert.ok(!existsSync(join(root, '.claude')));
-    runHook({ INIT_CWD: root, CI: 'true', NESTJS_BOOST_CI: '1' });
-    assert.ok(existsSync(join(root, '.claude')));
-    const plain = project();
-    writeFileSync(join(plain, 'package.json'), '{"name":"plain","devDependencies":{"nestjs-boost":"^1.0.0"}}');
-    assert.match(runHook({ INIT_CWD: plain }), /no @nestjs\/core/);
-    writeFileSync(join(plain, 'package.json'), 'not json');
-    assert.match(runHook({ INIT_CWD: plain }), /skipped/);
-  });
-});
-
 describe('security', () => {
   const writeLock = (root, data) => {
     mkdirSync(join(root, '.ai'), { recursive: true });
@@ -235,6 +201,34 @@ describe('security', () => {
   };
   // Directory links: 'junction' needs no admin rights on Windows and is ignored elsewhere.
   const linkDir = (target, path) => symlinkSync(target, path, 'junction');
+
+  it('escapes terminal control sequences from project text in warnings and errors', () => {
+    const root = project();
+    writeLock(root, { files: { '\x1b]52;c;cGF5bG9hZA==\x07evil‮': 'x' } });
+    const r = sync(root);
+    const w = r.warnings.join('\n');
+    assert.ok(!/[\x1b\x07‮]/.test(w), 'raw control characters reach the terminal');
+    assert.match(w, /<U\+001B>\]52;c;cGF5bG9hZA==<U\+0007>evil<U\+202E>/);
+    assert.throws(() => sync(root, { agents: '\x1b[2Jfake' }), (e) => !e.message.includes('\x1b') && e.message.includes('<U+001B>[2Jfake'));
+  });
+
+  it('ignores "__proto__" in package.json dependencies', () => {
+    const root = project();
+    writeFileSync(join(root, 'package.json'), '{"name":"app","dependencies":{"__proto__":{"@nestjs/core":"^12.0.0"}}}');
+    assert.throws(() => sync(root), /no @nestjs\/core/);
+    writeFileSync(join(root, 'package.json'), '{"name":"app","dependencies":{"@nestjs/core":"^12.0.0","__proto__":{"@nestjs/graphql":"^12.0.0"}}}');
+    const r = sync(root, {}, { dryRun: true });
+    assert.equal(Object.getPrototypeOf(r.facts.deps), null);
+    assert.ok(!r.skills.some((s) => s.name === 'nestjs-graphql'));
+  });
+
+  it('keeps lock skill options to known skills, so a stale or tampered lock cannot break a sync', () => {
+    const root = project();
+    writeLock(root, { skillOptions: { include: ['../../etc', 'nestjs-removed-skill', 'nestjs-graphql'], exclude: 'nope' } });
+    const r = sync(root);
+    assert.ok(r.skills.some((s) => s.name === 'nestjs-graphql' && s.reason === 'include'));
+    assert.deepEqual(JSON.parse(read(root, LOCK)).skillOptions, { include: ['nestjs-graphql'] });
+  });
 
   it('ignores lock entries that point at project files (no prune delete)', () => {
     const root = project({}, { 'src/billing/billing.service.ts': 'export const x = 1;\n' });

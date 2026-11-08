@@ -5,10 +5,9 @@
 ```text
 bin/nestjs-boost.mjs      CLI (install | list | agents | uninstall): argument parsing and output only
 lib/agents.mjs            agent registry: skills folder, instructions file and markers per agent
-lib/installer.mjs         detection, selection, hash-protected sync, uninstall (shared by CLI + hook)
-lib/setup.mjs             interactive install flow: pick agents → show plan → confirm → sync
+lib/installer.mjs         detection, selection, hash-protected sync, uninstall (used by the CLI)
+lib/setup.mjs             interactive install flow: pick agents → pick extra skills → show plan → confirm → sync
 lib/prompt.mjs            dependency-free terminal prompts (multi-select, confirm)
-scripts/postinstall.mjs   npm install hook: opt-in refresh only (needs a lock file or config key); never fails, skips in CI / when disabled
 scripts/validate.mjs      skill + manifest validation (runs in `npm test` and before publish)
 test/                     node:test suite (no dependencies)
 skills/<name>/            SKILL.md + references/*.md: the shipped content
@@ -19,7 +18,7 @@ tools/                    Python maintenance scripts (not published)
 evals/                    output evals, graders, fixtures, trigger queries (not published)
 ```
 
-Only `bin/`, `lib/`, `scripts/postinstall.mjs`, `guidelines/`, `skills/`, `manifest.json`, `README.md`, `CHANGELOG.md`, `NOTICE.md` and `LICENSE` are published (see `files` in `package.json`). Run `npm pack --dry-run` to check.
+Only `bin/`, `lib/`, `guidelines/`, `skills/`, `manifest.json`, `README.md`, `CHANGELOG.md`, `NOTICE.md` and `LICENSE` are published (see `files` in `package.json`). Run `npm pack --dry-run` to check.
 
 ## Workflow
 

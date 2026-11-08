@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { AGENTS, AGENT_LIST, ALL_INSTRUCTION_FILES, ALL_SKILL_DIRS, planSkillDirs } from '../lib/agents.mjs';
 import { LOCK, sync } from '../lib/installer.mjs';
 import { PromptCancelled, canPrompt, confirm, multiSelect } from '../lib/prompt.mjs';
-import { agentChoices, interactiveInstall } from '../lib/setup.mjs';
+import { agentChoices, choiceToOptions, interactiveInstall, skillChoices } from '../lib/setup.mjs';
 import { formatChanges, parseArgs } from '../bin/nestjs-boost.mjs';
 
 const CLI = fileURLToPath(new URL('../bin/nestjs-boost.mjs', import.meta.url));
@@ -164,6 +164,21 @@ describe('prompts', () => {
     await assert.rejects(p, PromptCancelled);
   });
 
+  it('multi-select: scrolls long lists and allows an empty choice with min 0', async () => {
+    const t = terminal();
+    const choices = Array.from({ length: 30 }, (_, i) => ({ value: `s${i}`, label: `S${i}` }));
+    const p = multiSelect({ message: 'Pick', choices, min: 0, pageSize: 5 }, t.io);
+    await press(t.io, ...Array(12).fill(KEY.down), KEY.space, KEY.enter);
+    assert.deepEqual(await p, ['s12']);
+    assert.match(t.text(), /↓ 25 more/);
+    assert.match(t.text(), /↑ 8 more · ↓ 17 more/);
+    const t2 = terminal();
+    const p2 = multiSelect({ message: 'Pick', choices, min: 0, pageSize: 5 }, t2.io);
+    await press(t2.io, KEY.enter);
+    assert.deepEqual(await p2, []);
+    assert.match(t2.text(), /Pick none/);
+  });
+
   it('confirm: y, n and enter for the default', async () => {
     for (const [key, expected] of [['y', true], ['n', false], [KEY.enter, true]]) {
       const t = terminal();
@@ -189,6 +204,7 @@ describe('interactive install', () => {
     // Picker order follows the registry: claude-code, codex, copilot, cursor, gemini, ...
     const p = interactiveInstall(root, {}, {}, t.io, (l) => lines.push(l));
     await press(t.io, KEY.down, KEY.down, KEY.down, KEY.down, KEY.space, KEY.enter);  // add Gemini CLI
+    await press(t.io, KEY.enter);                                    // no extra skills
     await press(t.io, 'y');
     const r = await p;
     assert.deepEqual(r.opts.agents, ['cursor', 'gemini']);
@@ -202,16 +218,81 @@ describe('interactive install', () => {
     const root = project();
     const t = terminal();
     const p = interactiveInstall(root, {}, {}, t.io, () => {});
-    await press(t.io, KEY.enter, 'n');
+    await press(t.io, KEY.enter, KEY.enter, 'n');
     assert.equal(await p, null);
     assert.ok(!existsSync(join(root, '.claude')) && !existsSync(join(root, LOCK)));
+  });
+
+  it('skill menu: Enter keeps only matching skills; "All skills" installs every skill', async () => {
+    const root = project({ dependencies: { '@nestjs/core': '^12.3.0', '@nestjs/typeorm': '^12.0.0' } });
+    const t = terminal();
+    const p = interactiveInstall(root, {}, {}, t.io, () => {});
+    await press(t.io, KEY.enter, KEY.enter, 'y');                    // agents, skills (default), confirm
+    const r = await p;
+    assert.equal(r.skills.length, 9);                                // 8 foundation + typeorm
+    assert.match(t.text(), /Which skills do you want\?/);
+    assert.match(t.text(), /Only matching skills \(recommended\)\s+9 skills: foundation \+ your packages/);
+
+    const t2 = terminal();
+    const p2 = interactiveInstall(root, {}, {}, t2.io, () => {});
+    await press(t2.io, KEY.enter, KEY.down, KEY.enter, 'y');         // "All skills"
+    const all = await p2;
+    assert.equal(all.skills.length, skillChoices(all.facts, []).length);
+    assert.ok(existsSync(join(root, '.claude/skills/nestjs-graphql/SKILL.md')));
+    assert.ok(sync(root).opts.all, 'the choice is remembered for later syncs');
+
+    const t3 = terminal();                                           // next run starts on "All skills"
+    const p3 = interactiveInstall(root, {}, {}, t3.io, () => {});
+    await press(t3.io, KEY.enter, KEY.up, KEY.enter, 'y');           // back to "Only matching"
+    assert.equal((await p3).skills.length, 9);
+    assert.ok(!existsSync(join(root, '.claude/skills/nestjs-graphql')));
+  });
+
+  it('skill menu: "Choose skills" lists every skill with matching ones ticked', async () => {
+    const root = project({ dependencies: { '@nestjs/core': '^12.3.0', '@nestjs/typeorm': '^12.0.0' } });
+    const facts = sync(root, {}, { dryRun: true }).facts;
+    const choices = skillChoices(facts, ['nestjs-architecture']);
+    const typeorm = choices.find((c) => c.value === 'nestjs-database-typeorm');
+    assert.equal(typeorm.tag, '(matches)');
+    assert.equal(choices.find((c) => c.value === 'nestjs-graphql').hint, 'for @nestjs/graphql');
+    assert.equal(choices.find((c) => c.value === 'nestjs-architecture').hint, 'foundation');
+    assert.deepEqual(choiceToOptions(facts, ['nestjs-graphql', ...choices.filter((c) => c.tag && c.value !== 'nestjs-database-typeorm').map((c) => c.value)]),
+      { all: false, include: ['nestjs-graphql'], exclude: ['nestjs-database-typeorm'] });
+
+    const names = choices.map((c) => c.value);
+    const t = terminal();
+    const lines = [];
+    const p = interactiveInstall(root, {}, {}, t.io, (l) => lines.push(l));
+    await press(t.io, KEY.enter, KEY.down, KEY.down, KEY.enter);     // agents, "Choose skills"
+    const keys = [];                                                 // walk the list: tick graphql, untick typeorm
+    for (let i = 0; i < names.length; i++) {
+      if (names[i] === 'nestjs-graphql' || names[i] === 'nestjs-database-typeorm') keys.push(KEY.space);
+      keys.push(KEY.down);
+    }
+    await press(t.io, ...keys, KEY.enter, 'y');
+    const r = await p;
+    assert.ok(r.skills.some((s) => s.name === 'nestjs-graphql' && s.reason === 'include'));
+    assert.ok(!r.skills.some((s) => s.name === 'nestjs-database-typeorm'));
+    assert.ok(lines.some((l) => /1 added by you/.test(l)));
+    const kept = sync(root);                                         // remembered for later syncs
+    assert.deepEqual([kept.opts.include, kept.opts.exclude], [['nestjs-graphql'], ['nestjs-database-typeorm']]);
+  });
+
+  it('skips the skill menu when --include or config decides', async () => {
+    const root = project({ 'nestjs-boost': { include: ['nestjs-graphql'] } });
+    const t = terminal();
+    const p = interactiveInstall(root, {}, {}, t.io, () => {});
+    await press(t.io, KEY.enter, 'y');
+    const r = await p;
+    assert.ok(r.skills.some((s) => s.name === 'nestjs-graphql'));
+    assert.doesNotMatch(t.text(), /Which skills/);
   });
 
   it('does not ask for agents pinned in package.json', async () => {
     const root = project({ 'nestjs-boost': { agents: ['junie'] } });
     const t = terminal();
     const p = interactiveInstall(root, {}, {}, t.io, () => {});
-    await press(t.io, 'y');
+    await press(t.io, KEY.enter, 'y');                               // skill picker, then confirm
     const r = await p;
     assert.deepEqual(r.opts.agents, ['junie']);
     assert.doesNotMatch(t.text(), /Which AI coding agents/);

@@ -1,6 +1,6 @@
 {
   "pack": "nestjs-boost",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "nestjs": {
     "targetMajor": 12,
     "supportedRange": ">=12 <13"

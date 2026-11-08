@@ -2,7 +2,7 @@
 import { realpathSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { AGENT_IDS, AGENT_LIST, BoostError, DEFAULT_AGENTS, MANIFEST, PACK_VERSION, sync, uninstall } from '../lib/installer.mjs';
+import { AGENT_IDS, AGENT_LIST, BoostError, DEFAULT_AGENTS, clean, MANIFEST, PACK_VERSION, sync, uninstall } from '../lib/installer.mjs';
 import { PromptCancelled, canPrompt } from '../lib/prompt.mjs';
 import { interactiveInstall } from '../lib/setup.mjs';
 
@@ -142,7 +142,7 @@ const invokedDirectly = () => {
 if (invokedDirectly()) {
   main().catch((err) => {
     if (err instanceof PromptCancelled) { console.log('\nCancelled; nothing was changed.'); process.exitCode = 130; return; }
-    console.error(`nestjs-boost: ${err instanceof BoostError ? err.message : err.stack}`);
+    console.error(`nestjs-boost: ${err instanceof BoostError ? err.message : String(err.stack).split('\n').map(clean).join('\n')}`);
     process.exitCode = 1;
   });
 }

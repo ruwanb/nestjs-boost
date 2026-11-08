@@ -67,6 +67,13 @@ export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
 
 // auth/api-key.guard.ts
+import { timingSafeEqual } from 'node:crypto';
+const sameSecret = (given: string, expected: string) => {   // constant time; only the length can leak
+  const a = Buffer.from(given);
+  const b = Buffer.from(expected);
+  return a.length === b.length && timingSafeEqual(a, b);
+};
+
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
   constructor(private readonly reflector: Reflector, private readonly config: ConfigService) {}
@@ -76,7 +83,8 @@ export class ApiKeyGuard implements CanActivate {
     if (isPublic) return true;
     const req = context.switchToHttp().getRequest();
     const expected = this.config.get<string>('API_KEY');
-    if (!expected || req.headers['x-api-key'] !== expected) throw new UnauthorizedException();
+    const given = req.headers['x-api-key'];
+    if (!expected || typeof given !== 'string' || !sameSecret(given, expected)) throw new UnauthorizedException();
     return true;
   }
 }
@@ -87,6 +95,7 @@ export class ApiKeyGuard implements CanActivate {
 
 - `getAllAndOverride` lets route metadata override controller metadata; `getAllAndMerge` combines arrays (e.g. roles).
 - Fail closed: if the secret is not configured, deny.
+- Compare secrets in constant time (`timingSafeEqual` after a length check), never with `===`/`!==`, which leaks how many leading characters matched. Reject a header that isn't a single string. Don't hash the key just to compare it: a fast hash like SHA-256 is fine here but reads as weak password hashing to scanners (CodeQL `js/insufficient-password-hash`).
 - For decorators that take a value (e.g. `@Roles(['admin'])`), prefer the typed form `export const Roles = Reflector.createDecorator<string[]>()`, read with `this.reflector.get(Roles, context.getHandler())`.
 
 ## Pattern: consistent error responses with errorCode
