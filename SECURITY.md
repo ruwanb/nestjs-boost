@@ -18,7 +18,7 @@ stay anonymous.
 ## Scope
 
 In scope:
-- The CLI and `postinstall` hook (`bin/`, `lib/`, `scripts/postinstall.mjs`): for example, writing
+- The CLI (`bin/`, `lib/`): for example, writing
   or deleting files outside the documented paths, following symlinks, or trusting a tampered
   `.ai/nestjs-boost.lock.json`.
 - Skill or guideline content that instructs AI agents to do something unsafe (prompt injection,

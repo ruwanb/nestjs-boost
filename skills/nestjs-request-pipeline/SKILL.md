@@ -67,6 +67,9 @@ export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
 
 // auth/api-key.guard.ts
+import { createHash, timingSafeEqual } from 'node:crypto';
+const digest = (value: string) => createHash('sha256').update(value).digest();   // equal length for timingSafeEqual
+
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
   constructor(private readonly reflector: Reflector, private readonly config: ConfigService) {}
@@ -76,7 +79,8 @@ export class ApiKeyGuard implements CanActivate {
     if (isPublic) return true;
     const req = context.switchToHttp().getRequest();
     const expected = this.config.get<string>('API_KEY');
-    if (!expected || req.headers['x-api-key'] !== expected) throw new UnauthorizedException();
+    const given = req.headers['x-api-key'];
+    if (!expected || typeof given !== 'string' || !timingSafeEqual(digest(given), digest(expected))) throw new UnauthorizedException();
     return true;
   }
 }
@@ -87,6 +91,7 @@ export class ApiKeyGuard implements CanActivate {
 
 - `getAllAndOverride` lets route metadata override controller metadata; `getAllAndMerge` combines arrays (e.g. roles).
 - Fail closed: if the secret is not configured, deny.
+- Compare secrets in constant time (`timingSafeEqual` over equal-length digests), never with `===`/`!==`, which leaks how many leading characters matched. Reject a header that isn't a single string.
 - For decorators that take a value (e.g. `@Roles(['admin'])`), prefer the typed form `export const Roles = Reflector.createDecorator<string[]>()`, read with `this.reflector.get(Roles, context.getHandler())`.
 
 ## Pattern: consistent error responses with errorCode

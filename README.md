@@ -2,14 +2,14 @@
 
 Agent Skills and project guidelines for AI-assisted **NestJS 12** development, for Claude Code, GitHub Copilot, Cursor, OpenAI Codex, Gemini CLI, Windsurf, Cline, Roo Code, Kiro, JetBrains Junie and OpenCode.
 
-Install it in a NestJS project. It detects which Nest packages you use, then copies in **only the skills you need**: 45 skills built from the official docs, covering everything from DI and testing to TypeORM, BullMQ, GraphQL, microservices, MCP and `@nestjs/ai`. It also adds a short guidelines block describing your project to each agent's instructions file (`CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, ...).
+Install it in a NestJS project. It detects which Nest packages you use, then copies in **only the skills you need**, and lets you add any of the others: 45 skills built from the official docs, covering everything from DI and testing to TypeORM, BullMQ, GraphQL, microservices, MCP and `@nestjs/ai`. It also adds a short guidelines block describing your project to each agent's instructions file (`CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, ...).
 
 ```bash
 npm install -D nestjs-boost
 npx nestjs-boost install
 ```
 
-`install` asks which agents you use, shows what it will write, and installs after you confirm:
+`install` asks which agents you use and which extra skills you want, shows what it will write, and installs after you confirm:
 
 ```text
 ? Which AI coding agents do you use?
@@ -21,6 +21,12 @@ npx nestjs-boost install
   ◯ Gemini CLI                  .gemini/skills/ · GEMINI.md
   ...
 
+? Which skills do you want?
+  ↑/↓ move · enter confirm · esc cancel
+❯ Only matching skills (recommended)  14 skills: foundation + your packages
+  All skills                          45 skills, including packages you don't use
+  Choose skills                       pick from the full list
+
 Skills: 14 skills (8 foundation, 6 for your packages)
   .claude/skills/      read by Claude Code, Cursor
 Guidelines block: CLAUDE.md, AGENTS.md
@@ -28,9 +34,9 @@ Changes: 16 new
 ? Install now? (Y/n)
 ```
 
-Agents already used in the repo are detected and pre-selected. Your choice is saved in `.ai/nestjs-boost.lock.json`, so later runs and `npm install` reuse it. Run `npx nestjs-boost install` again whenever you want to change it.
+Agents already used in the repo are detected and pre-selected. For skills, press Enter to install only those matching your packages, pick **All skills**, or pick **Choose skills** to tick and untick from the full list (matching ones start ticked). Your choices are saved in `.ai/nestjs-boost.lock.json`, so later runs reuse them. Run `npx nestjs-boost install` again whenever you want to change them.
 
-The first `nestjs-boost install` is an explicit opt-in: installing the package alone never adds agent instructions to your project. After that, every `npm install` keeps the skills in sync.
+Installing the package runs no scripts and writes nothing to your project. Only `nestjs-boost install` does. Adding it as a dev dependency is optional: it pins the version for your team, so everyone's `npx nestjs-boost install` gives the same skills.
 
 Commit the skill folders, instruction files and `.ai/nestjs-boost.lock.json` so the whole team and CI agents get the same skills.
 
@@ -58,10 +64,10 @@ Using another agent that supports Agent Skills and `AGENTS.md`? Pick **OpenAI Co
 
 ## How it works
 
-- **Selection:** the 8 foundation skills always install. Package skills install when their package is in `package.json` (for example `@nestjs/typeorm` → `nestjs-database-typeorm`). Monorepo `apps/*`, `libs/*` and `packages/*` are included. Run `npx nestjs-boost list` to see what was picked and why.
-- **Agents:** you pick them in `install`. Without a terminal to ask in (CI, piped output, `--yes`, the `postinstall` hook), nestjs-boost uses, in order: `--agents`, the `agents` config, your last choice from the lock file, then agents detected from repo files (`.claude/`, `.cursor/`, `.gemini/`, `.windsurf/`, `AGENTS.md`, ...). If nothing applies, it uses Claude Code + Codex, whose folders most agents read.
+- **Selection:** the 8 foundation skills always install. Package skills install when their package is in `package.json` (for example `@nestjs/typeorm` → `nestjs-database-typeorm`). Monorepo `apps/*`, `libs/*` and `packages/*` are included. Change this in the `install` skill menu, with `--include` / `--exclude`, or install all of them with `--all`. Run `npx nestjs-boost list` to see what was picked and why.
+- **Agents:** you pick them in `install`. Without a terminal to ask in (CI, piped output, `--yes`), nestjs-boost uses, in order: `--agents`, the `agents` config, your last choice from the lock file, then agents detected from repo files (`.claude/`, `.cursor/`, `.gemini/`, `.windsurf/`, `AGENTS.md`, ...). If nothing applies, it uses Claude Code + Codex, whose folders most agents read.
 - **Switching agents** removes what was installed for the agents you dropped: their skill folders, and the guidelines block in their instructions file. Files nestjs-boost created are deleted if nothing else is left in them. Folders you edited are kept.
-- **Updates:** once the project has opted in (it has `.ai/nestjs-boost.lock.json` from a first `nestjs-boost install`, or a `"nestjs-boost"` key in `package.json`), every `npm install` / `npm ci` re-syncs the skills:
+- **Updates:** run `npx nestjs-boost install` (or `install --yes` to reuse your last choices without questions) after adding Nest packages or upgrading nestjs-boost:
   - New packages get their skills.
   - Upgrading `nestjs-boost` refreshes the skill text.
   - Skills for removed packages are deleted.
@@ -70,29 +76,23 @@ Using another agent that supports Agent Skills and `AGENTS.md`? Pick **OpenAI Co
   - Text outside the `<!-- nestjs-boost:start/end -->` markers is never touched.
   - It runs offline, has no dependencies, and writes only inside your project.
 
-## Package managers
+## Keeping skills in sync
 
-After the first `nestjs-boost install`, a `postinstall` script keeps the skills in sync. It runs only when `nestjs-boost` is a direct dependency of the project, never under `npx`. Some setups don't run dependency scripts. In that case, run the CLI again after adding Nest packages:
+nestjs-boost has no install script, so `npm install` never runs it and package managers never ask you to approve it. Re-run the CLI when your dependencies change:
 
 ```bash
-npx nestjs-boost install
+npx nestjs-boost install --yes
 ```
 
-| Setup | What to do |
-| --- | --- |
-| npm 11 (warns about unapproved install scripts) | `npm install-scripts approve nestjs-boost` (adds it to `allowScripts`) |
-| pnpm 10+ (blocks scripts by default) | `pnpm approve-builds`, or add `"pnpm": { "onlyBuiltDependencies": ["nestjs-boost"] }` |
-| Bun | add `"trustedDependencies": ["nestjs-boost"]` |
-| Yarn, npm ≤ 10 | nothing; scripts run |
-| `--ignore-scripts` | run `npx nestjs-boost install` |
-| CI (`CI` set) | skipped on purpose; set `NESTJS_BOOST_CI=1` to sync in CI |
-| Opt out temporarily | `NESTJS_BOOST_SKIP=1 npm install` |
+To do this automatically, add it to your own scripts, for example `"prepare": "nestjs-boost install --yes"` in `package.json` (with nestjs-boost as a dev dependency).
 
 ## Commands
 
 ```bash
 npx nestjs-boost install               # pick agents, review the plan, install (opts the project in)
-npx nestjs-boost install --yes         # no questions: reuse the last choice (scripts, CI)
+npx nestjs-boost install --yes         # no questions: reuse the last choices (scripts, CI)
+npx nestjs-boost install --include nestjs-graphql,nestjs-cqrs   # add skills without the menu
+npx nestjs-boost install --all         # every skill
 npx nestjs-boost install --agents cursor,gemini   # choose agents without the picker
 npx nestjs-boost install --dry-run     # show the plan
 npx nestjs-boost install --force       # also overwrite skills you edited
@@ -103,11 +103,11 @@ npx nestjs-boost uninstall             # remove skills, guideline blocks and the
 
 Options: `--agents <ids>` (see [Supported agents](#supported-agents)), `-y, --yes`, `--include <skills>`, `--exclude <skills>`, `--all`, `--no-guidelines`, `--root <dir>`.
 
-The picker appears only in an interactive terminal. It never appears in CI (`CI` set), when output is piped, with `--yes` or `--agents`, or when `agents` is set in config. Those runs never wait for input.
+The questions appear only in an interactive terminal. They never appear in CI (`CI` set), when output is piped, with `--yes` or `--agents`, or when `agents` is set in config. Those runs never wait for input.
 
 ## Configuration
 
-Settings persist in `package.json`, and the postinstall step uses them too. Adding this key also opts the project in to syncing on `npm install`, even before the first `nestjs-boost install`:
+Settings can live in `package.json`, so the whole team shares them:
 
 ```json
 {
@@ -120,7 +120,7 @@ Settings persist in `package.json`, and the postinstall step uses them too. Addi
 }
 ```
 
-You can put the same object in `.ai/nestjs-boost.json` instead. CLI flags override both. When `agents` is set here, `install` uses it and doesn't show the picker. Leave it out to choose interactively.
+You can put the same object in `.ai/nestjs-boost.json` instead. CLI flags override both. When `agents` is set here, `install` uses it and doesn't show the agent picker; when `include` or `all` is set, it doesn't show the skill menu. Leave them out to choose interactively.
 
 ## Customizing
 
@@ -142,7 +142,7 @@ You can put the same object in `.ai/nestjs-boost.json` instead. CLI flags overri
 | Reliability and ops | `nestjs-resilience`, `nestjs-idempotency`, `nestjs-outbox`, `nestjs-workflows`, `nestjs-locks`, `nestjs-health-checks`, `nestjs-observability`, `nestjs-deployment`, `nestjs-upgrading` |
 | AI | `nestjs-mcp-server`, `nestjs-ai` |
 
-`nestjs-standalone-apps`, `nestjs-deployment` and `nestjs-upgrading` install only when their condition is met (`nest-commander`, a `Dockerfile`/`serverless.yml`, NestJS < 12) or when you `include` them.
+`nestjs-standalone-apps`, `nestjs-deployment` and `nestjs-upgrading` install only when their condition is met (`nest-commander`, a `Dockerfile`/`serverless.yml`, NestJS < 12) or when you add them in the skill menu or with `include`.
 
 ## Requirements
 
@@ -151,7 +151,7 @@ You can put the same object in `.ai/nestjs-boost.json` instead. CLI flags overri
 
 ## Security
 
-The package has no dependencies and makes no network calls. It reads `package.json`, lockfile names, `nest-cli.json` and `.ai/`, and writes only the paths shown above, inside the project root. The install script never fails your install, and it never writes to a project that hasn't opted in. Source and skills are plain text you can review in `node_modules/nestjs-boost`.
+The package has no dependencies and makes no network calls. It reads `package.json`, lockfile names, `nest-cli.json` and `.ai/`, and writes only the paths shown above, inside the project root. It has no install scripts: nothing runs on `npm install`, and nothing is written until you run `nestjs-boost install`. Source and skills are plain text you can review in `node_modules/nestjs-boost`.
 
 Hardening against a hostile repository or a tampered lock file:
 
