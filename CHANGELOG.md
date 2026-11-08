@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.1 — 2026-11-08
+
+- README: tidier Credits section.
+- First release published from GitHub Actions with npm provenance.
+- Repository only (not in the package): removed the unused `@nestjs/mau` from the test fixture, which fixes the `undici` and `tmp` security alerts.
+
 ## 1.2.0 — 2026-11-08
 
 First release after the package was republished (versions 1.0.0 and 1.1.0 can't be reused on npm). It includes everything below.
